@@ -2,7 +2,7 @@
   "name": "quiz-master",
   "version": "0.1.0",
   "private": true,
-  "homepage": "",
+  "homepage": "https://SerhiiMonzhelesov.github.io/quiz-master/",
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.1",
     "@emotion/react": "^11.11.1",
