@@ -22,6 +22,7 @@ const AnswerCard = ({
       if (key.includes(`[${idxInput}][answer]`)) return currentQuestion[key];
     }
   };
+  /* delete this comment */
 
   return (
     <StyledAnswerWrapper $quiz={type === "quiz" ? "quiz" : null}>
