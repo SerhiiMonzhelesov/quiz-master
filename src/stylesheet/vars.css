@@ -1,0 +1,38 @@
+/* rgba 2% = hexa 05 */
+/* rbba 8% = hexa 14 */
+/* rgba 30% = hexa 4d */
+/* rgba 40% = hexa 66 */
+/* rgba 50% = hexa 80 */
+/* rgba 60% = hexa 99 */
+:root {
+    /* background */
+    --main-background: #171717;
+    --second-background: #1C1C1C;
+    --blue-background: #205BF1;
+    --white-background: #ffffff05;
+    --question-background-sky: #43A8D3;
+    --question-background-violet: #6636C5;
+    --question-background-pink: #E65368;
+    --backdrop: #17171799;
+    
+    /* text colors */
+    --text-color-100: #F4F4F4;
+    --text-color-30: #f4f4f44d;
+    --text-color-40: #f4f4f466;
+    --text-color-50: #f4f4f480;
+    --text-color-60: #f4f4f499;
+
+    /* colors */
+    --accent-color: #205BF1;
+    --sky-color: #43A8D3;
+    --violet-color: #6636C5;
+    --pink-color: #E65368;
+    --star-color-100: #F4F4F4;
+    --star-color-8:#F4F4F414;
+
+    /* border */
+    --border-color-60: #f4f4f499;
+    --border-color-30:#f4f4f44d;
+
+
+}
