@@ -1,6 +1,5 @@
 import { BtnConfirmAuthS } from "./BtnConfirmAuthS";
 
-
 const BtnConfirmAuth = ({ children }) => {
   return (
     <>

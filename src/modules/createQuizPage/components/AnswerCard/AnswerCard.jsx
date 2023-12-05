@@ -9,32 +9,47 @@ import {
 
 const AnswerCard = ({
   letter,
-  changeAttribute,
+  handleRadioChange,
   checked,
   type,
-  currentQuestion,
+  questionChanges,
   selectAnswers,
   handleQuizChange,
+  currentQuestion,
+  idxAnswer,
 }) => {
+  const currentAnswer = currentQuestion?.answers
+    ? currentQuestion?.answers[idxAnswer]
+    : "";
+  const bgColorCard = questionChanges?.background
+    ? questionChanges.background
+    : currentQuestion?.background || "rgba(255, 255, 255, 0.02)";
+
   const definedValueInput = () => {
-    const idxInput = selectAnswers.indexOf(letter);
-    for (let key in currentQuestion) {
-      if (key.includes(`[${idxInput}][answer]`)) return currentQuestion[key];
-    }
+    if (type === "quiz")
+      for (let key in questionChanges) {
+        if (key.includes(`[${idxAnswer}][answer]`)) return questionChanges[key];
+      }
   };
-  /* delete this comment */
 
   return (
-    <StyledAnswerWrapper $quiz={type === "quiz" ? "quiz" : null}>
-      <StyledLabelAnswer htmlFor={letter}>
+    <StyledAnswerWrapper
+      $quiz={(type || currentQuestion?.type) === "quiz" ? "quiz" : null}
+    >
+      <StyledLabelAnswer
+        htmlFor={letter}
+        $colorCheckbox={
+          bgColorCard !== "rgba(255, 255, 255, 0.02)" && "#F4F4F4"
+        }
+      >
         <p className="letter">{letter}:</p>
-        {type === "quiz" ? (
+        {(type || currentQuestion?.type) === "quiz" ? (
           <StyledTextareaAnswer
             type="text"
             id={letter}
             name="answer"
             placeholder="Enter answer"
-            value={definedValueInput() ? definedValueInput() : ""}
+            value={definedValueInput() || currentAnswer?.answer || ""}
             onChange={handleQuizChange}
           />
         ) : (
@@ -44,10 +59,14 @@ const AnswerCard = ({
         )}
         <StyledInputRadio
           type="radio"
-          name="answer radio"
+          name="answer"
           id={letter}
-          checked={checked === letter}
-          onChange={changeAttribute}
+          checked={
+            checked !== ""
+              ? checked === letter
+              : currentAnswer?.correctAnswer || false
+          }
+          onChange={handleRadioChange}
         />
         <span></span>
       </StyledLabelAnswer>

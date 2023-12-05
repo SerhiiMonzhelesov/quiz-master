@@ -5,9 +5,10 @@ import {
   updateQuestion,
   deleteQuestion,
 } from "../../api/question";
+import { getQuizThunk } from "./quizThunks";
 
 export const addQuestionThunk = createAsyncThunk(
-  "question/addQuestion",
+  "quiz/addQuestion",
   async (questionData, thunkAPI) => {
     try {
       const data = await addQuestion(questionData);
@@ -43,11 +44,14 @@ export const updateQuestionThunk = createAsyncThunk(
 );
 
 export const deleteQuestionThunk = createAsyncThunk(
-  "question/deleteQuestion",
-  async (questionId, thunkAPI) => {
+  "quiz/deleteQuestion",
+  async (id, thunkAPI) => {
+    console.log("idThunk: ", id);
     try {
-      await deleteQuestion(questionId);
-      return questionId;
+      const data = await deleteQuestion(id);
+
+      return id;
+      /* better to come back here from server in data - id question */
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }

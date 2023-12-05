@@ -1,23 +1,26 @@
-import styled from 'styled-components';
-import { FiMessageCircle, FiLogOut, FiSettings, FiChevronDown } from "react-icons/fi"
-import { NavLink } from 'react-router-dom';
-
+import styled from "styled-components";
+import {
+  FiMessageCircle,
+  FiLogOut,
+  FiSettings,
+  FiChevronDown,
+} from "react-icons/fi";
+import { NavLink } from "react-router-dom";
 
 export const HeaderContainer = styled.header`
-position: relative;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-top: 20px;
-    @media (min-width: 768px) {
-     padding-top: 32px;
-      max-width: 1240px;
-        margin: auto;
+  @media (min-width: 768px) {
+    padding-top: 32px;
+    max-width: 1240px;
+    margin: auto;
   }
 
   @media (min-width: 1440px) {
-  padding-top: 20px;
-
+    padding-top: 20px;
   }
 `;
 
@@ -32,9 +35,8 @@ export const AvatarImg = styled.div`
   text-align: center;
   background-color: var(--pink-color);
   border-radius: 50%;
-color: var(--text-color-100);
+  color: var(--text-color-100);
 `;
-
 
 export const Logo = styled.div`
   color: var(--text-color-100);
@@ -46,18 +48,18 @@ export const Logo = styled.div`
 
 export const NavList = styled.nav`
   display: none;
-      @media (min-width: 768px) {
+  @media (min-width: 768px) {
     display: flex;
   }
 `;
 
 export const NavItem = styled(NavLink)`
   margin-right: 20px;
-  color: rgba(244, 244, 244, 0.60);
+  color: rgba(244, 244, 244, 0.6);
   line-height: 20px;
-  cursor: pointer;  
+  cursor: pointer;
 
-    &.active {
+  &.active {
     color: var(--text-color-100);
   }
 `;
@@ -68,25 +70,25 @@ export const DropdownContainer = styled.div`
 `;
 
 export const ButtonRegister = styled.button`
-padding: 16px 32px;
-background: transparent;
-border-radius: 30px;
-border: 1px solid rgba(244, 244, 244, 0.60);
+  padding: 16px 32px;
+  background: transparent;
+  border-radius: 30px;
+  border: 1px solid rgba(244, 244, 244, 0.6);
 
-color: var(--text-color-100);
-font-size: 16px;
-font-weight: 700;
-line-height: 16px;
+  color: var(--text-color-100);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 16px;
 `;
 
 export const ButtonLogin = styled.button`
-color: var(--text-color-100);
-font-size: 16px;
-font-weight: 700;
-line-height: 16px; /* 100% */
-text-decoration-line: underline;
-background: transparent;
-margin-left: 16px;
+  color: var(--text-color-100);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 16px; /* 100% */
+  text-decoration-line: underline;
+  background: transparent;
+  margin-left: 16px;
 `;
 
 export const DropdownButton = styled.button`
@@ -98,18 +100,18 @@ export const DropdownButton = styled.button`
 `;
 
 export const UserName = styled.p`
-color: var(--text-color-100);
-font-size: 16px;
-font-weight: 700;
-line-height: 20px;
-margin-left: 8px;
-margin-right: 16px;
-`
+  color: var(--text-color-100);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  margin-left: 8px;
+  margin-right: 16px;
+`;
 
 export const DropdownList = styled.ul`
   position: absolute;
   left: 0;
-  display: ${({ open }) => (open ? 'block' : 'none')};
+  display: ${({ open }) => (open ? "block" : "none")};
   padding: 24px;
   border-radius: 20px;
   background: var(--blue-background);
@@ -118,11 +120,11 @@ export const DropdownList = styled.ul`
 export const DropdownItem = styled.li`
   margin-bottom: 14px;
   color: var(--text-color-100);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    `
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+`;
 
 export const Settings = styled(FiSettings)`
   width: 16px;
@@ -150,6 +152,6 @@ export const Down = styled(FiChevronDown)`
 `;
 
 export const BoxAuth = styled.div`
-display: flex;
-align-items: center;
-`
+  display: flex;
+  align-items: center;
+`;

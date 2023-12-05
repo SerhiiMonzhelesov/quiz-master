@@ -17,8 +17,7 @@ const QuizesList = ({ quizzesArr, className, updateFavoriteQuizes }) => {
         {randomQuizzes && <CreateQuizCard />}
         {quizzesArr?.length > 0 &&
           quizzesArr?.map((quiz) => (
-            // <li key={uuidv4()}>
-            <li key={randomQuizzes ? uuidv4() : quiz._id}>
+            <li key={uuidv4()}>
               <QuizListItem
                 quiz={quiz}
                 updateFavoriteQuizes={updateFavoriteQuizes}

@@ -6,12 +6,8 @@ const options = {
   },
 };
 
-export async function addQuestion({ quizId, currentQuestion }) {
-  const { data } = await instance.post(
-    `/questions/${quizId}`,
-    currentQuestion,
-    options
-  );
+export async function addQuestion({ id, question }) {
+  const { data } = await instance.post(`/questions/${id}`, question, options);
   return data;
 }
 

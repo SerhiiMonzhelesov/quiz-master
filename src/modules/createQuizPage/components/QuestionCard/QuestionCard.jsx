@@ -22,41 +22,54 @@ import {
 } from "./QuestionCard.styled";
 import AnswerCard from "../AnswerCard/AnswerCard";
 import { useMediaQuery } from "react-responsive";
-import { useSelector } from "react-redux";
-import { currentCreated } from "../../../../redux/selectors";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentQuiz } from "../../../../redux/selectors";
 
 const QuestionCard = ({
-  currentQuestion,
-  setCurrentQuestion,
+  questionChanges,
+  setQuestionChanges,
   handleQuizChange,
-  quiz,
+  handleRadioChange,
+  quizChanges,
   selectAnswers,
   handleSubmit,
+  isChecked,
+  idxActiveQuestion,
 }) => {
   const [isDropdownTimeOpen, setDropdownTimeOpen] = useState(false);
-  const [isCurrentTime, setIsCurrentTime] = useState(null);
-  const [isChecked, setChecked] = useState("");
-  const currentQuiz = useSelector(currentCreated);
+  const dropdownRef = useRef(null);
+  const currentQuiz = useSelector(selectCurrentQuiz);
+  const dispatch = useDispatch();
   const isDesktop = useMediaQuery({ query: "(min-width: 1440px)" });
 
-  const questionNumber = 1;
-  const allQuestions = 10;
+  const currentQuestion = currentQuiz?.questions
+    ? currentQuiz?.questions[idxActiveQuestion]
+    : quizChanges;
+  const questionNumber = currentQuiz?.questions
+    ? Number(idxActiveQuestion) + 1
+    : idxActiveQuestion;
 
-  const dropdownRef = useRef(null);
+  const allQuestions = currentQuiz ? currentQuiz.questions.length : 0;
+  const bgColorCard = questionChanges?.background
+    ? questionChanges.background
+    : currentQuestion?.background || "rgba(255, 255, 255, 0.02)";
 
   const toggleDropdown = () => {
     setDropdownTimeOpen(!isDropdownTimeOpen);
   };
 
-  const formatTime = (timeInSeconds) => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = timeInSeconds % 60;
+  const formatTime = (timeSeconds) => {
+    if (!timeSeconds) return;
+    const minutes = Math.floor(timeSeconds / 60);
+    const seconds = timeSeconds % 60;
     return `${String(minutes).padStart(1, "0")}:${String(seconds).padStart(
       2,
       "0"
     )}`;
   };
 
+  const formattedTime =
+    formatTime(questionChanges?.time) || formatTime(currentQuestion?.time);
   const timeInSeconds = [30, 45, 60, 75, 90, 105, 120];
 
   useEffect(() => {
@@ -74,48 +87,16 @@ const QuestionCard = ({
     return () => {
       document.removeEventListener("click", handleDocumentTimeClick);
     };
-  }, [isDropdownTimeOpen]);
+  }, [dispatch, isDropdownTimeOpen]);
 
   const handleClickTime = (evt) => {
-    const currentTime = evt.target.textContent;
     const currentTimeId = evt.target.id;
 
-    setIsCurrentTime(currentTime);
-    setCurrentQuestion((prevState) => ({
+    setQuestionChanges((prevState) => ({
       ...prevState,
       time: currentTimeId,
     }));
   };
-
-  const handleRadioAnswer = (event) => {
-    const value = event.target.id;
-
-    setChecked(value);
-    let fields = {};
-    if (currentQuestion.type === "quiz") {
-      selectAnswers.forEach((item, idx) => {
-        fields = {
-          ...fields,
-          [`answers[${idx}][correctAnswer]`]: value === item ? true : false,
-        };
-      });
-    } else {
-      selectAnswers.forEach(
-        (item, idx) =>
-          (fields = {
-            ...fields,
-            [`answers[${idx}][answer]`]: idx === 0 ? "True" : "False",
-            [`answers[${idx}][correctAnswer]`]: value === item ? true : false,
-          })
-      );
-    }
-    setCurrentQuestion((prevState) => ({
-      ...prevState,
-      ...fields,
-    }));
-  };
-
-  
 
   return (
     <StyledQuestionWrapper>
@@ -123,10 +104,10 @@ const QuestionCard = ({
         type="text"
         placeholder="Quiz theme"
         name="quiz"
-        value={quiz.quizName}
+        value={quizChanges?.quizName || currentQuiz?.quizName || ""}
         onChange={handleQuizChange}
       />
-      <StyledQuestionCard>
+      <StyledQuestionCard $bgcolor={bgColorCard}>
         {isDesktop ? (
           <StyledImageNumberBlock>
             <ImageWrapper>
@@ -146,7 +127,7 @@ const QuestionCard = ({
             <p>Time:</p>
             <DropdownContainer ref={dropdownRef}>
               <DropdownButton onClick={toggleDropdown}>
-                <p>{isCurrentTime}</p>
+                <p>{formattedTime || ""}</p>
                 {isDropdownTimeOpen ? (
                   <Down style={{ rotate: "180deg" }} />
                 ) : (
@@ -170,26 +151,37 @@ const QuestionCard = ({
             type="text"
             name="question"
             placeholder="Enter a question"
-            value={currentQuestion.question}
+            value={questionChanges.question || currentQuestion?.question || ""}
             onChange={handleQuizChange}
           />
           <AnswerCardContainer>
-            {selectAnswers?.map((el) => (
+            {selectAnswers?.map((el, idx) => (
               <AnswerCard
                 key={el}
                 letter={el}
                 checked={isChecked}
-                changeAttribute={handleRadioAnswer}
-                type={currentQuestion.type}
+                handleRadioChange={handleRadioChange}
+                type={questionChanges.type}
                 handleQuizChange={handleQuizChange}
-                currentQuestion={currentQuestion}
+                questionChanges={questionChanges}
                 selectAnswers={selectAnswers}
+                currentQuestion={currentQuestion}
+                idxAnswer={idx}
               />
             ))}
           </AnswerCardContainer>
           {isDesktop ? (
             <BtnContainer>
-              <StyledBtnSave onClick={handleSubmit} data-id={currentQuiz?._id}>
+              <StyledBtnSave
+                $colortext={
+                  bgColorCard !== "rgba(255, 255, 255, 0.02)" && "#171717"
+                }
+                $bgColor={
+                  bgColorCard !== "rgba(255, 255, 255, 0.02)" && "#F4F4F4"
+                }
+                onClick={handleSubmit}
+                data-id={currentQuiz?._id}
+              >
                 Save
               </StyledBtnSave>
               <StyledBtnCancel>Cancel</StyledBtnCancel>
@@ -201,7 +193,16 @@ const QuestionCard = ({
             <StyledQuestionNumber>
               {questionNumber}/{allQuestions}
             </StyledQuestionNumber>
-            <StyledBtnSave onClick={handleSubmit} data-id={currentQuiz?._id}>
+            <StyledBtnSave
+              $colortext={
+                bgColorCard !== "rgba(255, 255, 255, 0.02)" && "#171717"
+              }
+              $bgColor={
+                bgColorCard !== "rgba(255, 255, 255, 0.02)" && "#F4F4F4"
+              }
+              onClick={handleSubmit}
+              data-id={currentQuiz?._id}
+            >
               Save
             </StyledBtnSave>
             <StyledBtnCancel>Cancel</StyledBtnCancel>

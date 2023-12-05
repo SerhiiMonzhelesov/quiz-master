@@ -56,7 +56,7 @@ export const StyledLabelAnswer = styled.label`
     top: 50%;
     height: 12px;
     width: 12px;
-    background: #205bf1;
+    background: ${(props) => props.$colorCheckbox || "#205bf1"};
     border-radius: 3px;
     transform: scale(0);
   }

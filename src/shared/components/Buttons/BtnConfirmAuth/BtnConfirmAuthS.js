@@ -15,7 +15,7 @@ export const BtnConfirmAuthS = styled.button`
   border: transparent;
   transform: scale(1);
   transition: transform 250ms linear;
-  
+
   &:hover,
   &:focus {
     transform: scale(1.1);
@@ -24,6 +24,6 @@ export const BtnConfirmAuthS = styled.button`
   @media screen and (max-width: 768px) {
     max-width: 295px;
     font-size: 14px;
-  line-height: 1.1;
+    line-height: 1.1;
   }
 `;

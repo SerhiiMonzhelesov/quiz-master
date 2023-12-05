@@ -20,6 +20,7 @@ import {
   notifyBtnHeartSuccess,
   notifyQuizDeletedSuccess,
 } from "../../shared/NotificationToastify/Toasts";
+import { addQuestionThunk, deleteQuestionThunk } from "./questionThunks";
 
 const initialState = {
   quizzes: {
@@ -28,7 +29,6 @@ const initialState = {
       adult: [],
       children: [],
     },
-    currentCreated: null,
     filtered: [],
     filteredQty: null,
     passed: [],
@@ -67,11 +67,27 @@ const quizSlice = createSlice({
     updateOwnQuizes: (state, action) => {
       state.quizzes.ownQuizes = action.payload;
     },
+    setDefaultCurrent: (state, { payload }) => {
+      state.quizzes.current = payload;
+    },
+    setCurrentChange: (state, { payload }) => {
+      payload === null && (state.quizzes.current = payload);
+      const current = state.quizzes.current;
+
+      if (current && current?._id) {
+        const index = current.questions.findIndex((question) => !question._id);
+        index === -1
+          ? current.questions.push(payload)
+          : current.questions.splice(index, 1, payload);
+      } else
+        payload !== null && (state.quizzes.current = { questions: [payload] });
+    },
+    setDeleteQuestion: (state, { payload }) => {
+      state.quizzes.current.questions.splice(payload, 1);
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(passedUsersQuiz.fulfilled, (state, action) => {})
-      .addCase(updateUsersQuiz.fulfilled, (state, action) => {})
       .addCase(getRandomQuizzesThunk.fulfilled, (state, action) => {
         const allQuizzes = action.payload;
         if (allQuizzes.adults) {
@@ -115,7 +131,7 @@ const quizSlice = createSlice({
         state.quizzes.favoritesQty = action.payload.totalFavorites;
       })
       .addCase(createQuizThunk.fulfilled, (state, action) => {
-        state.quizzes.currentCreated = action.payload;
+        state.quizzes.current = action.payload;
       })
       .addCase(quizResultThunk.fulfilled, (state, action) => {
         if (action.payload.userStats) {
@@ -123,8 +139,7 @@ const quizSlice = createSlice({
         }
         state.quizzes.total += 1;
       })
-      .addCase(updateQuizThunk.fulfilled, (state, action) => {        
-      })
+      .addCase(updateQuizThunk.fulfilled, (state, action) => {})
       .addCase(updateFavoriteQuizThunk.fulfilled, (state, action) => {
         notifyBtnHeartSuccess();
         state.quizzes.favorites = state.quizzes.favorites.filter(
@@ -141,10 +156,31 @@ const quizSlice = createSlice({
           (quiz) => quiz._id !== action.payload
         );
         state.quizzes.ownQuizesQty = state.quizzes.ownQuizesQty - 1;
+      })
+      .addCase(addQuestionThunk.fulfilled, (state, { payload }) => {
+        const index = state.quizzes.current.questions.findIndex(
+          (question) => !question._id
+        );
+        state.quizzes.current.questions.splice(index, 1, payload);
+      })
+      .addCase(deleteQuestionThunk.fulfilled, (state, { payload }) => {
+        console.log("payload: ", payload);
+        const questions = state.quizzes.current.questions;
+        state.quizzes.current.questions = questions.filter(
+          (question) => question._id !== payload
+        );
       });
   },
 });
 
-export const { setFilter, updateFiltered, updateFavorite, updateOwnQuizes, updateFilteredQty } =
-  quizSlice.actions;
+export const {
+  setFilter,
+  updateFiltered,
+  updateFavorite,
+  updateOwnQuizes,
+  updateFilteredQty,
+  setDefaultCurrent,
+  setCurrentChange,
+  setDeleteQuestion,
+} = quizSlice.actions;
 export const quizReducer = quizSlice.reducer;

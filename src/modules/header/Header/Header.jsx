@@ -19,7 +19,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import LogoutModal from "../../homepage/components/ModalLogOut/ModalLogOut";
 import { useDispatch, useSelector } from "react-redux";
-import {toggleShowBurgerModal} from "../../../redux/Modal/modalSlice";
+import { toggleShowBurgerModal } from "../../../redux/Modal/modalSlice";
 import { selectIsAuth, selectUser } from "../../../redux/user/userSelectors";
 
 import { useMediaQuery } from "react-responsive";
@@ -32,13 +32,13 @@ import Avatar from "../../../shared/components/Avatar/Avatar";
 const Header = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
-  const infoUser = useSelector(selectUser)
+  const infoUser = useSelector(selectUser);
 
   const dropdownRef = useRef(null);
 
   const hasToken = useSelector(selectIsAuth);
 
-const location = useLocation();
+  const location = useLocation();
 
   const dispatch = useDispatch();
 
@@ -47,6 +47,7 @@ const location = useLocation();
   });
 
   const toggleDropdown = () => {
+    // console.log("TOGGLE");
     setDropdownOpen(!isDropdownOpen);
     setLogoutModalOpen(false);
   };
@@ -61,11 +62,16 @@ const location = useLocation();
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
+      // console.log(
+      //   "!dropdownRef.current.contains(event.target): ",
+      //   dropdownRef.current.contains(event.target)
+      // );
       if (
         isDropdownOpen &&
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target)
       ) {
+        // console.log("EFFECT close");
         setDropdownOpen(false);
       }
     };
@@ -85,7 +91,7 @@ const location = useLocation();
 
   const navNotAuth = [
     { to: "/randomquiz/Adults", label: "For Adults" },
-    { to: "/randomquiz/Children", label: "For Children", }
+    { to: "/randomquiz/Children", label: "For Children" },
   ];
 
   const generateNavLinks = (hasToken) => {
@@ -94,13 +100,13 @@ const location = useLocation();
         <NavItem key={index} to={item.to}>
           {item.label}
         </NavItem>
-      ))
+      ));
     } else {
       return navNotAuth.map((item, index) => (
         <NavItem key={index} to={item.to}>
           {item.label}
         </NavItem>
-      ))
+      ));
     }
   };
 
@@ -110,16 +116,12 @@ const location = useLocation();
         <Logo>QuizMaster</Logo>
       </Link>
       <NavList>
-      {/(\/quiz\/[^/]+)/.test(location.pathname) ? null : (
-        hasToken ? (
+        {/(\/quiz\/[^/]+)/.test(location.pathname) ? null : hasToken ? (
           <>{generateNavLinks(hasToken)}</>
         ) : (
-          <>
-            {generateNavLinks(hasToken)}
-          </>
-        )
-      )}
-    </NavList>
+          <>{generateNavLinks(hasToken)}</>
+        )}
+      </NavList>
 
       {hasToken && !isMobile ? (
         <DropdownContainer ref={dropdownRef}>
@@ -139,7 +141,7 @@ const location = useLocation();
               </AvatarImg>
             )}
             {infoUser ? <UserName>{infoUser.name}</UserName> : null}
-            {isDropdownOpen ? <Down style={{ rotate: '180deg' }} /> : <Down />}
+            {isDropdownOpen ? <Down style={{ rotate: "180deg" }} /> : <Down />}
           </DropdownButton>
           <DropdownList open={isDropdownOpen}>
             <Link to="/settings">

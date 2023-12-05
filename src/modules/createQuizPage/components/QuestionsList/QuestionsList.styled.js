@@ -19,16 +19,16 @@ export const QuestionsWrapper = styled.div`
 
   @media only screen and (min-width: 768px) {
     width: 240px;
-  height: 630px;
+    height: 630px;
   }
 
   @media only screen and (min-width: 1440px) {
     width: 343px;
-  height: 589px;
-  padding: 32px;
+    height: 589px;
+    padding: 32px;
   }
 `;
-export const QuestionList = styled.li`
+export const QuestionItem = styled.li`
   font-size: 16px;
   /* width: 204px; */
   justify-content: space-between;
@@ -37,6 +37,7 @@ export const QuestionList = styled.li`
   align-items: center;
   margin: 8px 0;
   list-style-type: none;
+  cursor: pointer;
   &:not(:last-child) {
     border-bottom: 1px solid #ccc; /* підкреслення для всіх елементів, окрім останнього. */
   }
@@ -51,7 +52,7 @@ export const SelectStyledQuiz = styled.button`
   border-radius: 30px;
   border: 1px solid var(--border-color-30);
   background-color: transparent;
-  color: #F4F4F4;
+  color: #f4f4f4;
   color: var(--text-color-100);
   font-size: 16px;
   font-style: normal;

@@ -19,7 +19,7 @@ export const selectFavoriteQty = (state) => state.quiz.quizzes.favoritesQty;
 export const selectOwnQuizes = (state) => state.quiz.quizzes.ownQuizes;
 export const selectOwnQuizesQty = (state) => state.quiz.quizzes.ownQuizesQty;
 export const selectPassed = (state) => state.quiz.quizzes.passed;
-export const currentCreated = (state) => state.quiz.quizzes.currentCreated;
+export const selectCurrentQuiz = (state) => state.quiz.quizzes.current;
 
 export const selectReview = (state) => state.feedback.reviews;
 export const selectReviewPage = (state) => state.feedback.page;

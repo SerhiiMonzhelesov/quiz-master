@@ -8,53 +8,82 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createQuizThunk,
   getQuizCategoriesThunk,
+  getQuizThunk,
 } from "../../redux/quiz/quizThunks.js";
-import { selectDiscoverAllCategories } from "../../redux/selectors.js";
+import {
+  selectCurrentQuiz,
+  selectDiscoverAllCategories,
+} from "../../redux/selectors.js";
 import { useMediaQuery } from "react-responsive";
-import { addQuestionThunk } from "../../redux/question/questionThunks.js";
+import { addQuestionThunk } from "../../redux/quiz/questionThunks.js";
+import { useLocation } from "react-router-dom";
+import { setCurrentChange } from "../../redux/quiz/quizSlice.js";
+import makeFieldsAnswers from "../../helpers/makeFieldsAnswers.js";
 
-const CreateQuizPage = () => {
-  const [currentQuiz, setCurrentQuiz] = useState({
-    quizType: "adults",
-    quizName: "",
-  });
-  const [currentQuestion, setCurrentQuestion] = useState({
-    question: "",
-    type: "",
-    /* quiz    true or false */
-  });
-  const allCategories = useSelector(selectDiscoverAllCategories);
+export default function CreateQuizPage() {
+  const [quizChanges, setQuizChanges] = useState({});
+  const [questionChanges, setQuestionChanges] = useState({});
+  const [isChecked, setChecked] = useState("");
+  const [idxActiveQuestion, setIdxActiveQuestion] = useState(0);
+  const location = useLocation();
   const dispatch = useDispatch();
+  const allCategories = useSelector(selectDiscoverAllCategories);
+  const currentQuiz = useSelector(selectCurrentQuiz);
+
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
+  const idQuizToEdit = location.state;
+  const currentQuestion = currentQuiz?.questions
+    ? currentQuiz?.questions[idxActiveQuestion]
+    : quizChanges;
+
   const selectAnswers =
-    currentQuestion.type === "quiz" ? ["A", "C", "B", "D"] : ["A", "C"];
+    (questionChanges.type || currentQuestion?.type) === "quiz"
+      ? ["A", "C", "B", "D"]
+      : ["A", "C"];
 
   useEffect(() => {
-    if (allCategories) return;
-    dispatch(getQuizCategoriesThunk());
-  }, [dispatch, allCategories]);
+    if (idQuizToEdit && !allCategories) {
+      dispatch(getQuizThunk(idQuizToEdit.data));
+      dispatch(getQuizCategoriesThunk());
+    } else if (!idQuizToEdit && !allCategories) {
+      dispatch(getQuizCategoriesThunk());
+    } else if (idQuizToEdit && allCategories) {
+      dispatch(getQuizThunk(idQuizToEdit.data));
+    }
+
+    return () => dispatch(setCurrentChange(null));
+  }, [dispatch, allCategories, idQuizToEdit]);
 
   const handleRadioChange = (event) => {
     const value = event.target.id;
     const name = event.target.name;
-
-    if (name === "children" || name === "adults")
-      return setCurrentQuiz((prevState) => ({
+    if (name === "children" || name === "adults") {
+      return setQuizChanges((prevState) => ({
         ...prevState,
         quizType: value,
         quizCategory: "",
       }));
+    }
+    if (name === "answer") {
+      const fields = makeFieldsAnswers(
+        questionChanges.type,
+        value,
+        selectAnswers,
+        currentQuestion
+      );
 
+      setQuestionChanges((prevState) => ({
+        ...prevState,
+        ...fields,
+      }));
+      setChecked(value);
+    }
     name === "background" &&
-      setCurrentQuestion((prevState) => ({ ...prevState, background: value }));
-  };
-
-  const handleSelectCategory = (event) => {
-    setCurrentQuiz((prevState) => ({
-      ...prevState,
-      quizCategory: event.target.value,
-    }));
+      setQuestionChanges((prevState) => ({
+        ...prevState,
+        background: value,
+      }));
   };
 
   const handleQuizChange = (event) => {
@@ -70,32 +99,50 @@ const CreateQuizPage = () => {
             [`answers[${idx}][answer]`]: value,
           })
       );
-      return setCurrentQuestion((prevState) => ({
+      return setQuestionChanges((prevState) => ({
         ...prevState,
         ...answer,
       }));
     }
     nameInput === "quiz" &&
-      setCurrentQuiz((prevState) => ({
+      setQuizChanges((prevState) => ({
         ...prevState,
         quizName: value,
       }));
     nameInput === "question" &&
-      setCurrentQuestion((prevState) => ({
+      setQuestionChanges((prevState) => ({
         ...prevState,
         question: value,
       }));
     nameInput === "categories" &&
-      setCurrentQuiz((prevState) => ({
+      setQuizChanges((prevState) => ({
         ...prevState,
         quizCategory: value,
       }));
   };
 
+  console.group("CreatePageLOG");
+  console.log("questionChanges: ", questionChanges);
+  console.log("quizChanges: ", quizChanges);
+
+  console.groupEnd();
+
   const handleSubmit = (event) => {
     const quizId = event.target.dataset.id;
-    if (!quizId) dispatch(createQuizThunk(currentQuiz));
-    else dispatch(addQuestionThunk({ currentQuestion, quizId }));
+
+    if (!quizId)
+      dispatch(
+        createQuizThunk({
+          quizChanges,
+          dispatch,
+          dataQuestion: questionChanges,
+        })
+      );
+    else {
+      dispatch(addQuestionThunk({ question: questionChanges, id: quizId }));
+    }
+    setQuestionChanges({});
+    setIdxActiveQuestion(0); /* ??? veriify this action */
   };
 
   return (
@@ -105,51 +152,65 @@ const CreateQuizPage = () => {
         {isMobile ? (
           <>
             <QuestionCard
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
+              questionChanges={questionChanges}
+              setQuestionChanges={setQuestionChanges}
               handleQuizChange={handleQuizChange}
-              quiz={currentQuiz}
+              handleRadioChange={handleRadioChange}
+              quizChanges={quizChanges}
               selectAnswers={selectAnswers}
               handleSubmit={handleSubmit}
+              isChecked={isChecked}
+              idxActiveQuestion={idxActiveQuestion}
             />
             <SelectAttributeCard
               changeAttribute={handleRadioChange}
               changeCategory={handleQuizChange}
               categories={allCategories}
-              quiz={currentQuiz}
-              question={currentQuestion}
+              quizChanges={quizChanges}
+              questionChanges={questionChanges}
+              idxActiveQuestion={idxActiveQuestion}
             />
             <QuestionsList
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
+              questionChanges={questionChanges}
+              setQuestionChanges={setQuestionChanges}
+              isChecked={isChecked}
+              setChecked={setChecked}
+              setIdxActiveQuestion={setIdxActiveQuestion}
+              idxActiveQuestion={idxActiveQuestion}
             />
           </>
         ) : (
           <>
             <QuestionsList
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
+              questionChanges={questionChanges}
+              setQuestionChanges={setQuestionChanges}
+              isChecked={isChecked}
+              setChecked={setChecked}
+              setIdxActiveQuestion={setIdxActiveQuestion}
+              idxActiveQuestion={idxActiveQuestion}
             />
             <QuestionCard
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
+              questionChanges={questionChanges}
+              setQuestionChanges={setQuestionChanges}
               handleQuizChange={handleQuizChange}
-              quiz={currentQuiz}
+              handleRadioChange={handleRadioChange}
+              quizChanges={quizChanges}
               selectAnswers={selectAnswers}
               handleSubmit={handleSubmit}
+              isChecked={isChecked}
+              idxActiveQuestion={idxActiveQuestion}
             />
             <SelectAttributeCard
-              quiz={currentQuiz}
-              question={currentQuestion}
               changeAttribute={handleRadioChange}
-              changeCategory={handleSelectCategory}
+              changeCategory={handleQuizChange}
               categories={allCategories}
+              quizChanges={quizChanges}
+              questionChanges={questionChanges}
+              idxActiveQuestion={idxActiveQuestion}
             />
           </>
         )}
       </SectionWrapper>
     </PageWrapper>
   );
-};
-
-export default CreateQuizPage;
+}

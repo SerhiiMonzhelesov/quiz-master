@@ -26,7 +26,7 @@ export const StyledQuestionCard = styled.div`
   height: 562px;
   margin-top: 20px;
   padding: 40px 20px;
-  background-color: var(--white-background);
+  background-color: ${(props) => props.$bgcolor};
   border-radius: 20px;
 
   @media only screen and (min-width: 768px) {
@@ -178,7 +178,7 @@ export const StyledQuestion = styled.div`
   display: flex;
   flex-direction: column;
   width: clamp(280px, 295px, 100%);
-  
+
   font-size: 14px;
   letter-spacing: -0.14px;
 
@@ -246,7 +246,10 @@ export const StyledBtnSave = styled(BtnConfirmAuthS)`
   margin: 0;
   width: min-content;
   padding: 16px 32px;
+  color: ${(props) => props.$colortext};
+  background-color: ${(props) => props.$bgColor};
 `;
+
 export const StyledBtnCancel = styled(StyledBtnSave)`
   background-color: transparent;
   border: 1px solid var(--border-color-60);

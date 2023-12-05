@@ -16,6 +16,7 @@ import {
   patchPassedQuiz,
   retakePassedQuiz,
 } from "../../api/quiz";
+import { addQuestionThunk } from "./questionThunks";
 
 export const getRandomQuizzesThunk = createAsyncThunk(
   "quiz/getRandom",
@@ -117,9 +118,13 @@ export const createQuizThunk = createAsyncThunk(
   "quiz/addQuiz",
   async (quiz, thunkAPI) => {
     try {
-      const data = await createQuiz(quiz);
+      const data = await createQuiz(quiz.quizChanges);
+      if (data)
+        quiz.dispatch(
+          addQuestionThunk({ question: quiz.dataQuestion, id: data._id })
+        );
 
-      return data;
+      // return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }

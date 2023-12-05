@@ -10,12 +10,37 @@ import {
   SelectColorDiv,
   SetAttributeDiv,
 } from "./SelectAttributeCard.styled";
+import { useSelector } from "react-redux";
+import { selectCurrentQuiz } from "../../../../redux/selectors";
 
 const SelectAttributeCard = (props) => {
-  const { quiz, question, changeAttribute, changeCategory, categories } = props;
+  const {
+    quizChanges,
+    questionChanges,
+    changeAttribute,
+    changeCategory,
+    categories,
+    idxActiveQuestion,
+  } = props;
+  const currentQuiz = useSelector(selectCurrentQuiz);
 
-  const arrOptions =
-    quiz.quizType === "adults" ? categories?.adults : categories?.children;
+  const currentQuestion = currentQuiz?.questions
+    ? currentQuiz?.questions[idxActiveQuestion]
+    : quizChanges;
+
+  const getOptions = (quizChanges, currentQuiz) => {
+    if (!quizChanges.quizType && currentQuiz?.quizType)
+      return currentQuiz?.quizType === "children"
+        ? categories?.children
+        : categories?.adults;
+    if (quizChanges.quizType)
+      return quizChanges?.quizType === "children"
+        ? categories?.children
+        : categories?.adults;
+    else return categories?.adults;
+  };
+
+  const arrOptions = getOptions(quizChanges, currentQuiz);
 
   return (
     <SetAttributeDiv>
@@ -27,7 +52,11 @@ const SelectAttributeCard = (props) => {
               type="radio"
               id="children"
               name="children"
-              checked={quiz.quizType === "children"}
+              checked={
+                quizChanges.quizType
+                  ? quizChanges.quizType === "children"
+                  : currentQuiz?.quizType === "children"
+              }
               onChange={changeAttribute}
             />
             For Children
@@ -38,7 +67,12 @@ const SelectAttributeCard = (props) => {
               type="radio"
               id="adults"
               name="adults"
-              checked={quiz.quizType === "adults"}
+              checked={
+                quizChanges.quizType
+                  ? quizChanges.quizType === "adults"
+                  : currentQuiz?.quizType === "adults" ||
+                    !currentQuiz?.quizType === true
+              }
               onChange={changeAttribute}
             />
             For Adults
@@ -51,11 +85,13 @@ const SelectAttributeCard = (props) => {
         <AttributeCategorySelect
           name="categories"
           id="categories"
-          value={quiz.quizCategory}
+          value={quizChanges.quizCategory || currentQuiz?.categoryName}
           onChange={changeCategory}
         >
           <option value="defaultOption" hidden>
-            {`For ${quiz.quizType}`}
+            {quizChanges.quizType
+              ? `For ${quizChanges?.quizType}`
+              : currentQuiz?.categoryName || `For adults`}
           </option>
           {arrOptions?.map((item) => (
             <option key={uuidv4()} value={item._id}>
@@ -72,7 +108,10 @@ const SelectAttributeCard = (props) => {
               type="radio"
               id="#43A8D3"
               name="background"
-              checked={question.background === "#43A8D3"}
+              checked={
+                (questionChanges.background || currentQuestion?.background) ===
+                "#43A8D3"
+              }
               onChange={changeAttribute}
             />
             <span className="blue"></span>
@@ -82,7 +121,10 @@ const SelectAttributeCard = (props) => {
               type="radio"
               id="#6636C5"
               name="background"
-              checked={question.background === "#6636C5"}
+              checked={
+                (questionChanges.background || currentQuestion?.background) ===
+                "#6636C5"
+              }
               onChange={changeAttribute}
             />
             <span className="viola"></span>
@@ -92,7 +134,10 @@ const SelectAttributeCard = (props) => {
               type="radio"
               id="#E65368"
               name="background"
-              checked={question.background === "#E65368"}
+              checked={
+                (questionChanges.background || currentQuestion?.background) ===
+                "#E65368"
+              }
               onChange={changeAttribute}
             />
             <span className="orange"></span>
