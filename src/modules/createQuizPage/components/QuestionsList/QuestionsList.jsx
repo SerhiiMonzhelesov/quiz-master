@@ -13,9 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentQuiz } from "../../../../redux/selectors";
 import { setCurrentChange } from "../../../../redux/quiz/quizSlice";
-import { deleteQuestionThunk } from "../../../../redux/quiz/questionThunks";
 import { useLocation } from "react-router-dom";
-import { getQuizThunk } from "../../../../redux/quiz/quizThunks";
 import { toggleShowCreatePageModal } from "../../../../redux/Modal/modalSlice";
 import { selectIsShowCreatePageModal } from "../../../../redux/Modal/modalSelectors";
 import Modal from "../../../../shared/components/Modal/Modal";
@@ -37,9 +35,9 @@ function QuestionsList({
   const dispatch = useDispatch();
   const createBtnRef = useRef();
 
-  const location = useLocation();
+  // const location = useLocation();
 
-  const idQuizToEdit = location.state;
+  // const idQuizToEdit = location.state;
   const dataQuestions = currentQuiz?.questions ? currentQuiz.questions : [];
   const isQuestionHaveChange =
     Object.keys(questionChanges).length > 0 || isChecked !== "";

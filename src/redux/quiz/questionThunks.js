@@ -5,7 +5,6 @@ import {
   updateQuestion,
   deleteQuestion,
 } from "../../api/question";
-import { getQuizThunk } from "./quizThunks";
 
 export const addQuestionThunk = createAsyncThunk(
   "quiz/addQuestion",
@@ -49,6 +48,7 @@ export const deleteQuestionThunk = createAsyncThunk(
     console.log("idThunk: ", id);
     try {
       const data = await deleteQuestion(id);
+      console.log("data: ", data);
 
       return id;
       /* better to come back here from server in data - id question */

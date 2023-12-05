@@ -13,8 +13,8 @@ import {
   updateQuizThunk,
   updateFavoriteQuizThunk,
   deleteQuizThunk,
-  passedUsersQuiz,
-  updateUsersQuiz,
+  // passedUsersQuiz,
+  // updateUsersQuiz,
 } from "./quizThunks";
 import {
   notifyBtnHeartSuccess,
