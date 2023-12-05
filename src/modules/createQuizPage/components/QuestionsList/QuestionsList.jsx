@@ -13,7 +13,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentQuiz } from "../../../../redux/selectors";
 import { setCurrentChange } from "../../../../redux/quiz/quizSlice";
-import { useLocation } from "react-router-dom";
 import { toggleShowCreatePageModal } from "../../../../redux/Modal/modalSlice";
 import { selectIsShowCreatePageModal } from "../../../../redux/Modal/modalSelectors";
 import Modal from "../../../../shared/components/Modal/Modal";
