@@ -35,6 +35,7 @@ const CreateQuizModal = ({
     }
 
     setQuestionChanges({});
+    setChecked("");
     dispatch(setDeleteQuestion(idx));
     setIdxActiveQuestion(0);
     dispatch(toggleShowCreatePageModal());
