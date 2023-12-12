@@ -181,6 +181,7 @@ const QuestionCard = ({
                 }
                 onClick={handleSubmit}
                 data-id={currentQuiz?._id}
+                disabled={!currentQuiz}
               >
                 Save
               </StyledBtnSave>
@@ -202,6 +203,7 @@ const QuestionCard = ({
               }
               onClick={handleSubmit}
               data-id={currentQuiz?._id}
+              disabled={!currentQuiz}
             >
               Save
             </StyledBtnSave>

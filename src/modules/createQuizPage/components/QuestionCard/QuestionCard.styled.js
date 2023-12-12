@@ -248,6 +248,9 @@ export const StyledBtnSave = styled(BtnConfirmAuthS)`
   padding: 16px 32px;
   color: ${(props) => props.$colortext};
   background-color: ${(props) => props.$bgColor};
+  &:disabled{
+    color: red;
+  }
 `;
 
 export const StyledBtnCancel = styled(StyledBtnSave)`

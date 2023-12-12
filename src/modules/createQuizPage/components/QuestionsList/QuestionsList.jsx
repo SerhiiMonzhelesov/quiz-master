@@ -39,7 +39,9 @@ function QuestionsList({
   // const idQuizToEdit = location.state;
   const dataQuestions = currentQuiz?.questions ? currentQuiz.questions : [];
   const isQuestionHaveChange =
-    Object.keys(questionChanges).length > 0 || isChecked !== "";
+    (Object.keys(questionChanges).length > 1 &&
+      Object.keys(questionChanges)[0] === "type") ||
+    isChecked !== "";
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -74,8 +76,11 @@ function QuestionsList({
     const isHaveUnsavedQuestion = currentQuiz?.questions.some(
       (question) => !question._id
     );
-    isHaveUnsavedQuestion && currentQuiz
+
+    !!isHaveUnsavedQuestion && !!currentQuiz
       ? setIdxActiveQuestion(currentQuiz?.questions.length - 1)
+      : currentQuiz === null
+      ? setIdxActiveQuestion(0)
       : setIdxActiveQuestion(currentQuiz?.questions.length);
   };
 
@@ -118,6 +123,7 @@ function QuestionsList({
               key={uuidv4()}
               onClick={handlerSelectedQuestion}
               data-id={index}
+              $active_accent={idxActiveQuestion === index && "600"}
             >
               {index + 1}.{" "}
               {question?.type.charAt(0).toUpperCase() + question?.type.slice(1)}

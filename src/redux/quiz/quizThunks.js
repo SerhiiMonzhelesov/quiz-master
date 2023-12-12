@@ -120,7 +120,7 @@ export const createQuizThunk = createAsyncThunk(
     try {
       const data = await createQuiz(quiz.quizChanges);
       if (data)
-        quiz.dispatch(
+        thunkAPI.dispatch(
           addQuestionThunk({ question: quiz.dataQuestion, id: data._id })
         );
 

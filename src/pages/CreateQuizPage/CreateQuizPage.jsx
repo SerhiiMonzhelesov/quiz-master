@@ -114,6 +114,10 @@ export default function CreateQuizPage() {
         ...prevState,
         question: value,
       }));
+    /* if (nameInput === "categories" && !currentQuiz && !quizChanges) {
+    
+     } */
+    // nameInput === "categories" && console.log("object", allCategories);
     nameInput === "categories" &&
       setQuizChanges((prevState) => ({
         ...prevState,
@@ -134,7 +138,6 @@ export default function CreateQuizPage() {
       dispatch(
         createQuizThunk({
           quizChanges,
-          dispatch,
           dataQuestion: questionChanges,
         })
       );
@@ -142,7 +145,7 @@ export default function CreateQuizPage() {
       dispatch(addQuestionThunk({ question: questionChanges, id: quizId }));
     }
     setQuestionChanges({});
-    setIdxActiveQuestion(0); /* ??? veriify this action */
+    setIdxActiveQuestion(0);
   };
 
   return (

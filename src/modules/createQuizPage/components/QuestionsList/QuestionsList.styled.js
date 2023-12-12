@@ -32,10 +32,11 @@ export const QuestionItem = styled.li`
   font-size: 16px;
   /* width: 204px; */
   justify-content: space-between;
-  padding-bottom: 12px;
+  padding: 8px 0 12px;
   display: flex;
   align-items: center;
-  margin: 8px 0;
+  font-weight: ${(props) => props.$active_accent};
+
   list-style-type: none;
   cursor: pointer;
   &:not(:last-child) {
