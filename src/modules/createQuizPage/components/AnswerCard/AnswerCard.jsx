@@ -26,7 +26,7 @@ const AnswerCard = ({
     : currentQuestion?.background || "rgba(255, 255, 255, 0.02)";
 
   const definedValueInput = () => {
-    if (type === "quiz")
+    if ((type || currentQuestion?.type) === "quiz")
       for (let key in questionChanges) {
         if (key.includes(`[${idxAnswer}][answer]`)) return questionChanges[key];
       }
@@ -49,7 +49,11 @@ const AnswerCard = ({
             id={letter}
             name="answer"
             placeholder="Enter answer"
-            value={definedValueInput() || currentAnswer?.answer || ""}
+            value={
+              definedValueInput() === ""
+                ? ""
+                : definedValueInput() || currentAnswer?.answer || ""
+            }
             onChange={handleQuizChange}
           />
         ) : (

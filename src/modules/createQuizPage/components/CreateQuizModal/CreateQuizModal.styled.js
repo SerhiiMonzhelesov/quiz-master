@@ -12,7 +12,7 @@ export const StyledCreateQuizModal = styled.div`
   color: white;
   padding: 100px 80px;
 
-  .conrirm {
+  .confirm-btn {
     margin: 25px 25px 0 0;
   }
 `;

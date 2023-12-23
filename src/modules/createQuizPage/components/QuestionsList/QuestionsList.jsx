@@ -14,9 +14,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentQuiz } from "../../../../redux/selectors";
 import { setCurrentChange } from "../../../../redux/quiz/quizSlice";
 import { toggleShowCreatePageModal } from "../../../../redux/Modal/modalSlice";
-import { selectIsShowCreatePageModal } from "../../../../redux/Modal/modalSelectors";
-import Modal from "../../../../shared/components/Modal/Modal";
-import CreateQuizModal from "../CreateQuizModal/CreateQuizModal";
 
 function QuestionsList({
   setQuestionChanges,
@@ -25,23 +22,17 @@ function QuestionsList({
   setChecked,
   setIdxActiveQuestion,
   idxActiveQuestion,
+  isQuestionHaveChange,
+  setIdxToMove,
+  setIdxToDelete,
+  setValueAddedQuestion,
 }) {
   const currentQuiz = useSelector(selectCurrentQuiz);
-  const isShowCreatePageModal = useSelector(selectIsShowCreatePageModal);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [idxToDelete, setIdxToDelete] = useState(null);
-  const [idxToMove, setIdxToMove] = useState(null);
   const dispatch = useDispatch();
   const createBtnRef = useRef();
 
-  // const location = useLocation();
-
-  // const idQuizToEdit = location.state;
   const dataQuestions = currentQuiz?.questions ? currentQuiz.questions : [];
-  const isQuestionHaveChange =
-    (Object.keys(questionChanges).length > 1 &&
-      Object.keys(questionChanges)[0] === "type") ||
-    isChecked !== "";
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -61,27 +52,58 @@ function QuestionsList({
 
   const handleAdd = (value) => {
     setIsDropdownOpen(!isDropdownOpen);
-    setQuestionChanges((prevState) => {
-      const modifiedChanges = { ...prevState };
-      Object.keys(modifiedChanges).forEach((key) => {
-        if (key.includes("answers")) {
-          delete modifiedChanges[key];
-        }
-      });
-      return { ...modifiedChanges, type: value };
-    });
-    setChecked("");
-    dispatch(setCurrentChange({ type: value }));
-
     const isHaveUnsavedQuestion = currentQuiz?.questions.some(
       (question) => !question._id
     );
 
-    !!isHaveUnsavedQuestion && !!currentQuiz
-      ? setIdxActiveQuestion(currentQuiz?.questions.length - 1)
-      : currentQuiz === null
-      ? setIdxActiveQuestion(0)
-      : setIdxActiveQuestion(currentQuiz?.questions.length);
+    // currentQuiz === null
+    //   ? setIdxActiveQuestion(0)
+    //   : setIdxActiveQuestion(currentQuiz?.questions.length);
+
+    if (currentQuiz === null) {
+      setIdxActiveQuestion(0);
+      setQuestionChanges({ type: value });
+      dispatch(setCurrentChange({ type: value }));
+    }
+    if (!isHaveUnsavedQuestion && currentQuiz !== null) {
+      if (isQuestionHaveChange) {
+        setValueAddedQuestion(value);
+        dispatch(toggleShowCreatePageModal());
+      } else {
+        setIdxActiveQuestion(currentQuiz?.questions.length);
+        setQuestionChanges({ type: value });
+        dispatch(setCurrentChange({ type: value }));
+      }
+    }
+    if (isHaveUnsavedQuestion && !!currentQuiz) {
+      setIdxActiveQuestion(currentQuiz?.questions.length - 1);
+      dispatch(setCurrentChange({ type: value }));
+      setQuestionChanges({ type: value });
+      setChecked("");
+    }
+    // setChecked("");
+    // dispatch(setCurrentChange({ type: value }));
+    // setQuestionChanges({ type: value });
+    // setQuestionChanges((prevState) => {
+    // const modifiedChanges = { ...prevState };
+    // Object.keys(modifiedChanges).forEach((key) => {
+    //   if (key.includes("answers")) {
+    //     delete modifiedChanges[key];
+    //   }
+    // });
+    // return { ...prevState, type: value };
+    // });
+    // setChecked("");
+    // setQuestionChanges({});
+    // dispatch(setCurrentChange({ type: value }));
+
+    console.log("isHaveUnsavedQuestion: ", isHaveUnsavedQuestion);
+
+    // !!isHaveUnsavedQuestion && !!currentQuiz
+    //   ? setIdxActiveQuestion(currentQuiz?.questions.length - 1)
+    //   : currentQuiz === null
+    //   ? setIdxActiveQuestion(0)
+    //   : setIdxActiveQuestion(currentQuiz?.questions.length);
   };
 
   const handleDeleteOption = (event, index) => {
@@ -100,9 +122,10 @@ function QuestionsList({
     else if (
       !event.target.classList.contains("delete-icon") &&
       !isQuestionHaveChange
-    )
+    ) {
       setIdxActiveQuestion(idxSelectedQuestion);
-    else {
+      // setQuestionChanges({});
+    } else {
       setIdxToMove(idxSelectedQuestion);
       dispatch(toggleShowCreatePageModal());
     }
@@ -166,27 +189,6 @@ function QuestionsList({
           </DropdownList>
         )}
       </QuestionsWrapper>
-      {isShowCreatePageModal && (
-        <Modal
-          modalClose={() => {
-            dispatch(toggleShowCreatePageModal());
-            setIdxToMove(null);
-            setIdxToDelete(null);
-          }}
-        >
-          <CreateQuizModal
-            idx={idxToDelete}
-            setIdxToDelete={setIdxToDelete}
-            idxToMove={idxToMove}
-            setIdxToMove={setIdxToMove}
-            idxActiveQuestion={idxActiveQuestion}
-            setIdxActiveQuestion={setIdxActiveQuestion}
-            setQuestionChanges={setQuestionChanges}
-            isQuestionHaveChange={isQuestionHaveChange}
-            setChecked={setChecked}
-          />
-        </Modal>
-      )}
     </>
   );
 }

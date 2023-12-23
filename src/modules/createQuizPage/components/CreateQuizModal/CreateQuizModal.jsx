@@ -3,7 +3,10 @@ import { StyledCreateQuizModal } from "./CreateQuizModal.styled";
 import { toggleShowCreatePageModal } from "../../../../redux/Modal/modalSlice";
 import { deleteQuestionThunk } from "../../../../redux/quiz/questionThunks";
 import { selectCurrentQuiz } from "../../../../redux/selectors";
-import { setDeleteQuestion } from "../../../../redux/quiz/quizSlice";
+import {
+  setCurrentChange,
+  setDeleteQuestion,
+} from "../../../../redux/quiz/quizSlice";
 
 const CreateQuizModal = ({
   idx,
@@ -13,14 +16,19 @@ const CreateQuizModal = ({
   idxActiveQuestion,
   setIdxActiveQuestion,
   setQuestionChanges,
+  questionChanges,
   isQuestionHaveChange,
   setChecked,
+  valueAddedQuestion,
+  setValueAddedQuestion,
 }) => {
   const currentQuiz = useSelector(selectCurrentQuiz);
   const dispatch = useDispatch();
   const idToDelete = currentQuiz?.questions[idx]?._id;
   const isDeleteActiveQuestion = idx === Number(idxActiveQuestion);
-
+  const isHaveUnsavedQuestion = currentQuiz?.questions.some(
+    (question) => !question._id
+  );
   const handleConfirmDelete = (idx) => {
     if (isDeleteActiveQuestion && idToDelete) {
       dispatch(deleteQuestionThunk(idToDelete));
@@ -43,6 +51,12 @@ const CreateQuizModal = ({
   };
 
   const handleConfirmMove = (idxToMove) => {
+    if (
+      idxActiveQuestion === currentQuiz.questions.length - 1 &&
+      isHaveUnsavedQuestion
+    ) {
+      dispatch(setDeleteQuestion(idxActiveQuestion));
+    }
     setChecked("");
     setQuestionChanges({});
     setIdxActiveQuestion(idxToMove);
@@ -50,28 +64,57 @@ const CreateQuizModal = ({
     dispatch(toggleShowCreatePageModal());
   };
 
+  const handleConfirmAddQuestion = () => {
+    setChecked("");
+    dispatch(setCurrentChange({ type: valueAddedQuestion }));
+    setQuestionChanges({ type: valueAddedQuestion });
+    setIdxActiveQuestion(currentQuiz?.questions.length);
+    dispatch(toggleShowCreatePageModal());
+    setValueAddedQuestion(null);
+  };
+
   const handleCancelClick = () => {
     dispatch(toggleShowCreatePageModal());
     setIdxToDelete(null);
     setIdxToMove(null);
   };
+  const isActiveUnsavedQuestion =
+    idxActiveQuestion === currentQuiz?.questions.length - 1 &&
+    isHaveUnsavedQuestion;
 
   return (
     <StyledCreateQuizModal>
-      {isQuestionHaveChange && idx === null ? (
-        <p>{`You have unsaved changes to question # ${
-          idxActiveQuestion + 1
-        }. If you choose another question, this changes will be lost. Move to question # ${
-          idxToMove + 1
-        }?`}</p>
-      ) : (
+      {isQuestionHaveChange && !idx && idxToMove !== null && (
+        <p>
+          {`You have unsaved changes to question # ${
+            idxActiveQuestion + 1
+          }. If you choose another question, this changes` +
+            `${
+              isActiveUnsavedQuestion
+                ? ` and unsaved question # ${idxActiveQuestion + 1} `
+                : " "
+            }` +
+            `will be lost. Move to question # ${idxToMove + 1}?`}
+        </p>
+      )}
+      {idx !== null && (
         <p>{`Do you want to delete the question # ${idx + 1} ?`}</p>
       )}
+      {isQuestionHaveChange &&
+        !idx &&
+        idxToMove === null &&
+        currentQuiz?._id && (
+          <p>{`You have unsaved changes to question # ${
+            idxActiveQuestion + 1
+          }. If you create new question, this changes will be lost. Create new question?`}</p>
+        )}
       <button
-        className="conrirm"
+        className="confirm-btn"
         onClick={
           idx !== null
             ? () => handleConfirmDelete(idx)
+            : idxToMove == null
+            ? () => handleConfirmAddQuestion()
             : () => handleConfirmMove(idxToMove)
         }
       >

@@ -31,9 +31,11 @@ const QuestionCard = ({
   handleQuizChange,
   handleRadioChange,
   quizChanges,
+  setQuizChanges,
   selectAnswers,
   handleSubmit,
   isChecked,
+  setChecked,
   idxActiveQuestion,
 }) => {
   const [isDropdownTimeOpen, setDropdownTimeOpen] = useState(false);
@@ -98,13 +100,23 @@ const QuestionCard = ({
     }));
   };
 
+  const handleCancelChange = () => {
+    setQuizChanges({});
+    setQuestionChanges({});
+    setChecked("");
+  };
+
   return (
     <StyledQuestionWrapper>
       <StyledInputTheme
         type="text"
         placeholder="Quiz theme"
         name="quiz"
-        value={quizChanges?.quizName || currentQuiz?.quizName || ""}
+        value={
+          quizChanges?.quizName === ""
+            ? ""
+            : quizChanges?.quizName || currentQuiz?.quizName || ""
+        }
         onChange={handleQuizChange}
       />
       <StyledQuestionCard $bgcolor={bgColorCard}>
@@ -151,7 +163,11 @@ const QuestionCard = ({
             type="text"
             name="question"
             placeholder="Enter a question"
-            value={questionChanges.question || currentQuestion?.question || ""}
+            value={
+              questionChanges?.question === ""
+                ? ""
+                : questionChanges?.question || currentQuestion?.question || ""
+            }
             onChange={handleQuizChange}
           />
           <AnswerCardContainer>
@@ -161,7 +177,7 @@ const QuestionCard = ({
                 letter={el}
                 checked={isChecked}
                 handleRadioChange={handleRadioChange}
-                type={questionChanges.type}
+                type={questionChanges?.type}
                 handleQuizChange={handleQuizChange}
                 questionChanges={questionChanges}
                 selectAnswers={selectAnswers}
@@ -181,11 +197,13 @@ const QuestionCard = ({
                 }
                 onClick={handleSubmit}
                 data-id={currentQuiz?._id}
-                disabled={!currentQuiz}
+                // disabled={!currentQuiz}
               >
                 Save
               </StyledBtnSave>
-              <StyledBtnCancel>Cancel</StyledBtnCancel>
+              <StyledBtnCancel onClick={handleCancelChange}>
+                Cancel
+              </StyledBtnCancel>
             </BtnContainer>
           ) : null}
         </StyledQuestion>
@@ -203,11 +221,13 @@ const QuestionCard = ({
               }
               onClick={handleSubmit}
               data-id={currentQuiz?._id}
-              disabled={!currentQuiz}
+              // disabled={!currentQuiz}
             >
               Save
             </StyledBtnSave>
-            <StyledBtnCancel>Cancel</StyledBtnCancel>
+            <StyledBtnCancel onClick={handleCancelChange}>
+              Cancel
+            </StyledBtnCancel>
           </BtnContainer>
         )}
       </StyledQuestionCard>
